@@ -21,7 +21,8 @@
         "nunomaduro/collision": "^6.1",
         "phpunit/phpunit": "^9.5.10",
         "spatie/laravel-ignition": "^1.0",
-        "emadadly/laravel-uuid": "1.*"
+        "emadadly/laravel-uuid": "1.*",
+        "squizlabs/php_codesniffer": "3.*"
     },
     "autoload": {
         "psr-4": {

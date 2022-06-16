@@ -27,9 +27,8 @@ class News extends Model
         return $this->belongsTo(Category::class);
     }
 
-    public function scopeOfUuid(string $uuid): self
+    public static function getByUuid(string $uuid): self
     {
-        $news = $this->where('uuid', $uuid)->get();
-        return $news->first;
+        return News::where('uuid', '=',  $uuid)->get()->first();
     }
 }

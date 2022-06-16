@@ -3,21 +3,30 @@
 namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
-use App\Http\Resources\NewsCollection;
+use App\Http\Requests\NewsRequest;
 use App\Http\Resources\NewsResource;
 use App\Models\News;
-use Illuminate\Http\Request;
+use Illuminate\Http\Resources\Json\AnonymousResourceCollection;
+use Illuminate\Http\Response;
+use Illuminate\Support\Facades\Cache;
 
 class NewsApiController extends Controller
 {
-    public function index(): NewsCollection
+    private const CACHE_TTL = 3600;
+
+    public function index()
     {
-        // dd(new NewsCollection(News::all()));
-        return new NewsCollection(News::all());
+        return NewsResource::collection(News::all());
     }
 
-    public function show(string $uuid)
+    public function show(string $uuid): NewsResource|Response
     {
-        return new NewsResource(News::uuid($uuid));
+        $news = Cache::tags('news.show')->remember('api.news.' . $uuid, self::CACHE_TTL, function() use ($uuid){
+            return News::uuid($uuid);
+        });
+        if ($news !== null) {
+            return new NewsResource($news);
+        }
+        return response(['error' => 'News don\'t exist'], 404);
     }
 }

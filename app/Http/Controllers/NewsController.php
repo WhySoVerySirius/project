@@ -29,8 +29,8 @@ class NewsController extends Controller
 
     public function show(string $uuid): View
     {
-        $news = Cache::remember('news.show.' . $uuid, self::LIST_TTL, function () use ($uuid) {
-            return News::uuid($uuid);
+        $news = Cache::tags('news.show')->remember('news.show.' . $uuid, self::LIST_TTL, function () use ($uuid) {
+            return News::getByUuid($uuid);
         });
         NewsShowCounter::dispatch($news);
         return view('News.show', compact('news'));
@@ -41,7 +41,7 @@ class NewsController extends Controller
         return view(
             'News.edit',
             [
-                'news' => News::uuid($uuid),
+                'news' => News::getByUuid($uuid),
                 'categories' => Category::all(),
             ]
         );
@@ -91,7 +91,7 @@ class NewsController extends Controller
                 }
                 $news->category()->associate(Category::find($request->input('category_id')));
                 $news->save();
-                Mail::to(env('ADMIN_EMAIL'))->send(new NewsCreated($news));
+                Mail::to(env('ADMIN_EMAIL'))->queue((new NewsCreated($news))->onQueue('emails'));
                 Cache::tags('newsList')->flush();
                 return redirect()->route('news.index');
             }
@@ -102,8 +102,8 @@ class NewsController extends Controller
 
     public function destroy(string $uuid): RedirectResponse
     {
-        $news = News::uuid($uuid);
-        if($news->delete()) {
+        $news = News::getByUuid($uuid);
+        if ($news->delete()) {
             Cache::tags('newsList')->flush();
             return redirect()->back()->with('success', 'Entry ' . $news->title . ' deleted successfully');
         }

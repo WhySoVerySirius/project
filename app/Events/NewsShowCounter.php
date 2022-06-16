@@ -13,10 +13,12 @@ use Illuminate\Queue\SerializesModels;
 
 class NewsShowCounter
 {
-    use Dispatchable, InteractsWithSockets, SerializesModels;
+    use Dispatchable;
+    use InteractsWithSockets;
+    use SerializesModels;
 
     public News $news;
-    
+
     /**
      * Create a new event instance.
      *

@@ -8,11 +8,11 @@ magephp:
                 flags: -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i /var/www/html/deploy/key
                 timeout: 60
             user: root
-            branch: main
+            # branch: main
             from: ./
             host_path: /var/www/my-app
             symlink: laravel
-            releases: 4
+            releases: 10
             exclude:
                 - ./var/cache/*
                 - ./var/log/*
@@ -27,7 +27,8 @@ magephp:
                 - composer/install
                 - composer/dump-autoload
             on-deploy:
-                # - symfony/cache-warmup: { env: 'dev' }
+                # - fs/copy: { from: '/var/www/shared/.env', to: '.env' } 
+               # - symfony/cache-warmup: { env: 'dev' }
                 # - symfony/assets-install: { env: 'dev' }
             on-release:
             post-release:
