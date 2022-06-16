@@ -22,17 +22,17 @@
             <th scope="row">{{$new->id}}</th>
             <td>{{$new->title}}</td>
             <td>@if($new->description){{$new->description}}@endif</td>
-            <td>@if($new->category){{$new->category->title}}@endif  {{$new->created_at}}</td>
+            <td>@if($new->category){{$new->category->title}}@endif</td>
             <td>{{$new->active}}</td>
             <td>@if($new->image)<img src="{{asset($new->image)}}" alt="" style="height: 60px; width: 80px">@endif</td>
             <td>
-                <a href="{{route('news.edit', $new)}}"  class='btn btn-info'>Edit</a>
-                <form action="{{route('news.destroy', $new)}}" method="post">
+                <a href="{{route('news.edit', $new->uuid)}}"  class='btn btn-info'>Edit</a>
+                <form action="{{route('news.destroy', $new->uuid)}}" method="post">
                     @csrf
                     @method('DELETE')
                     <input type="submit" value="Delete" class='btn btn-danger'>
                 </form>
-                <a href="{{route('news.show', $new)}}" class='btn btn-primary'>Inspect</a>
+                <a href="{{route('news.show', $new->uuid)}}" class='btn btn-primary'>Inspect</a>
             </td>
         </tr>
         @endforeach

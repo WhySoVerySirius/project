@@ -12,8 +12,8 @@
     Description : {{$data['description']}}
 </p>
 
-@component('mail::button', ['url' => ''])
-Button Text
+@component('mail::button', ['url' => 'http://localhost/news/' . $data['uuid']])
+View entry
 @endcomponent
 
 Thanks,<br>

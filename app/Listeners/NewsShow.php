@@ -30,6 +30,6 @@ class NewsShow
     {
         $event->news->view_count++;
         $event->news->save();
-        Cache::put('news.show.' . $event->news->id, $event->news);
+        Cache::put('news.show.' . $event->news->uuid, $event->news);
     }
 }

@@ -19,6 +19,8 @@ class NewsResource extends JsonResource
             'title' => $request->title,
             'description' => $request->description,
             'created_at' => $request->created_at,
+            'id' => $request->id,
+            'uuid' => $request->uuid,
         ];
     }
 }

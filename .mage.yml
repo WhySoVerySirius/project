@@ -1,16 +1,17 @@
 magephp:
-    # log_dir: 
-    #     /var/www/html/mage-logs
+    log_dir: 
+        /var/www/html/mageLogs
     environments:
         production:
-            user: root
             ssh:
                 port: 22
-                flags: -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no root@139.59.128.168 -i /var/www/html/deploy
+                flags: -q -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -i /var/www/html/deploy/key
                 timeout: 60
-            # branch: master
+            user: root
+            branch: main
             from: ./
-            host_path: /var/www/myapp
+            host_path: /var/www/my-app
+            symlink: laravel
             releases: 4
             exclude:
                 - ./var/cache/*
@@ -20,9 +21,7 @@ magephp:
                 - ./storage/framework
                 - ./storage/logs
             hosts:
-                - webserver1
-                - webserver2
-                - webserver3
+                - 139.59.128.168
             pre-deploy:
                 - git/update
                 - composer/install

@@ -18,7 +18,7 @@
         <select name="category_id" id="">
             <option value="">-------//-------</option>
             @foreach($categories as $category)
-            <option value="{{$category->id}}" @if($category->id === $news->category->id)selected @endif>{{$category->title}}</option>
+            <option value="{{$category->id}}" @if($news->category) @if($category->id === $news->category->id)selected @endif @endif>{{$category->title}}</option>
             @endforeach
         </select>
     </div>

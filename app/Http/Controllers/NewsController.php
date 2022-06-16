@@ -20,25 +20,28 @@ class NewsController extends Controller
 
     public function index(): View
     {
-        $news = News::with('category')->orderBy('created_at', 'desc')->paginate(15);
-        return view('News.index', compact('news'))->with('i', (request()->input('page', 1) - 1) * 10);
+        $currentPage = request()->get('page', 1);
+        $news = Cache::tags('newsList')->remember('news.list.' . $currentPage, self::LIST_TTL, function () {
+            return News::with('category')->orderBy('created_at', 'desc')->paginate(15);
+        });
+        return view('News.index', compact('news'))->with('i', (request()->input('page', 1) - 1) * 15);
     }
 
-    public function show(string $id): View
+    public function show(string $uuid): View
     {
-        $news = Cache::remember('news.show.' . $id, self::LIST_TTL, function () use ($id) {
-            return News::find($id);
+        $news = Cache::remember('news.show.' . $uuid, self::LIST_TTL, function () use ($uuid) {
+            return News::uuid($uuid);
         });
         NewsShowCounter::dispatch($news);
         return view('News.show', compact('news'));
     }
 
-    public function edit(News $news): View
+    public function edit(string $uuid): View
     {
         return view(
             'News.edit',
             [
-                'news' => $news,
+                'news' => News::uuid($uuid),
                 'categories' => Category::all(),
             ]
         );
@@ -65,10 +68,9 @@ class NewsController extends Controller
             };
             $news->save();
             Cache::put('news.show.' . $news->id, $news, self::LIST_TTL);
-            Cache::put('news.list', News::with('category')->get(), self::LIST_TTL);
             return redirect()->route('news.index')->with('success', 'Entry created');
         };
-        return back()->with('failure', 'Stuff happened');
+        return back()->with('failure', 'Something went wrong');
     }
 
     public function create(): View
@@ -89,7 +91,8 @@ class NewsController extends Controller
                 }
                 $news->category()->associate(Category::find($request->input('category_id')));
                 $news->save();
-                Mail::to('admin@thisapp.net')->send(new NewsCreated($news));
+                Mail::to(env('ADMIN_EMAIL'))->send(new NewsCreated($news));
+                Cache::tags('newsList')->flush();
                 return redirect()->route('news.index');
             }
             return back()->withInput();
@@ -97,9 +100,13 @@ class NewsController extends Controller
         return back();
     }
 
-    public function destroy(News $news): RedirectResponse
+    public function destroy(string $uuid): RedirectResponse
     {
-        $news->delete();
-        return redirect()->back()->with('success', 'Entry ' . $news->title . ' deleted successfully');
+        $news = News::uuid($uuid);
+        if($news->delete()) {
+            Cache::tags('newsList')->flush();
+            return redirect()->back()->with('success', 'Entry ' . $news->title . ' deleted successfully');
+        }
+        return back()->with('failure', 'Something went wrong');
     }
 }

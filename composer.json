@@ -10,7 +10,8 @@
         "guzzlehttp/guzzle": "^7.2",
         "laravel/framework": "^9.11",
         "laravel/sanctum": "^2.14.1",
-        "laravel/tinker": "^2.7"
+        "laravel/tinker": "^2.7",
+        "emadadly/laravel-uuid": "1.*"
     },
     "require-dev": {
         "barryvdh/laravel-debugbar": "^3.6",
@@ -19,7 +20,8 @@
         "mockery/mockery": "^1.4.4",
         "nunomaduro/collision": "^6.1",
         "phpunit/phpunit": "^9.5.10",
-        "spatie/laravel-ignition": "^1.0"
+        "spatie/laravel-ignition": "^1.0",
+        "emadadly/laravel-uuid": "1.*"
     },
     "autoload": {
         "psr-4": {

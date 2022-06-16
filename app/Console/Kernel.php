@@ -2,6 +2,7 @@
 
 namespace App\Console;
 
+use App\Console\Commands\MailTodaysNews;
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
 
@@ -16,6 +17,10 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         // $schedule->command('inspire')->hourly();
+        $schedule->command(MailTodaysNews::class)->everyMinute();
+        // ->dailyAt('23:59');
+
+        $schedule->exec('php artisan queue:work --queue=emails')->everyMinute();
     }
 
     /**
