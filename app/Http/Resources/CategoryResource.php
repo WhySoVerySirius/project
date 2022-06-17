@@ -4,26 +4,22 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Resources\Json\JsonResource;
 
-class NewsResource extends JsonResource
+class CategoryResource extends JsonResource
 {
-    public static $wrap = 'news';
-
     /**
      * Transform the resource into an array.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return array|\Illuminate\Contracts\Support\Arrayable|\JsonSerializable
      */
-    public function toArray($request): array
+    public function toArray($request)
     {
-        // dd($this);
         return [
-            'title' => $this->title,
-            'description' => $this->description,
+            'category_id' => $this->id,
+            'category_title' => $this->title,
+            'deleted_at' => $this->deleted_at ?? '',
             'created_at' => $this->created_at,
-            'id' => $this->id,
-            'uuid' => $this->uuid,
-            'category' => new CategoryResource($this->category),
+            'updated_at' => $this->updated_at ?? '',
         ];
     }
 }

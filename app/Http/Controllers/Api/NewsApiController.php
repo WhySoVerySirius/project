@@ -16,7 +16,8 @@ class NewsApiController extends Controller
 
     public function index()
     {
-        return NewsResource::collection(News::all());
+        // dd(News::with('category')->get());
+        return NewsResource::collection(News::with('category')->get());
     }
 
     public function show(string $uuid): NewsResource|Response

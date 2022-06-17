@@ -27,8 +27,14 @@ class News extends Model
         return $this->belongsTo(Category::class);
     }
 
-    public static function getByUuid(string $uuid): self
+    public static function getByUuid(string $uuid, ?array $visible = []): self
     {
-        return News::where('uuid', '=',  $uuid)->get()->first();
+        $news =  News::where('uuid', '=',  $uuid)->get()->first();
+        if ($visible !== null) {
+            foreach ($visible as $item) {
+                $news->category->makeVisible($item);
+            }
+        }
+        return $news;
     }
 }

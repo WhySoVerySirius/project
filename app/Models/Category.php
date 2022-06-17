@@ -13,6 +13,7 @@ class Category extends Model
     use SoftDeletes;
 
     protected $table = 'categories';
+    protected $hidden = 'deleted_at';
 
     public function news(): HasMany
     {

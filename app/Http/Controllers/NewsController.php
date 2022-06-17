@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Events\ImageDelete;
 use App\Events\NewsShowCounter;
+use App\Http\Controllers\Helpers\ImageTransfer;
 use App\Http\Requests\NewsRequest;
 use App\Mail\NewsCreated;
 use App\Models\Category;
@@ -55,19 +56,14 @@ class NewsController extends Controller
             $news->category()->dissociate();
             $news->category()->associate(Category::find($request->input('category_id')));
             if ($request->file('image')) {
-                if ($news->image) {
-                    try {
-                        Storage::delete($news->image);
-                    } catch (\Throwable $th) {
-                        ImageDelete::dispatch($th);
-                    }
-                }
-                if ($path = Storage::putFile('photos', $request->file('image'))) {
+                $path = ImageTransfer::transfer($news, $request->file('image'));
+                if ($path) {
                     $news->image = $path;
-                };
+                }
             };
             $news->save();
             Cache::put('news.show.' . $news->id, $news, self::LIST_TTL);
+            Cache::tags('newsList')->flush();
             return redirect()->route('news.index')->with('success', 'Entry created');
         };
         return back()->with('failure', 'Something went wrong');
@@ -85,9 +81,10 @@ class NewsController extends Controller
             if ($formData) {
                 $news = News::create($formData);
                 if ($request->file('image')) {
-                    if ($path = Storage::putFile('photos', $request->file('image'))) {
+                    $path = ImageTransfer::transfer($news, $request->file('image'));
+                    if ($path) {
                         $news->image = $path;
-                    };
+                    }
                 }
                 $news->category()->associate(Category::find($request->input('category_id')));
                 $news->save();
