@@ -22,17 +22,30 @@ class NewsController extends Controller
     public function index(): View
     {
         $currentPage = request()->get('page', 1);
-        $news = Cache::tags('newsList')->remember('news.list.' . $currentPage, self::LIST_TTL, function () {
-            return News::with('category')->orderBy('created_at', 'desc')->paginate(15);
-        });
-        return view('News.index', compact('news'))->with('i', (request()->input('page', 1) - 1) * 15);
+        $news = Cache::tags('newsList')
+            ->remember(
+                'news.list.' . $currentPage,
+                self::LIST_TTL,
+                function () {
+                    return News::with('category')
+                        ->orderBy('created_at', 'desc')
+                        ->paginate(15);
+                }
+            );
+        return view('News.index', compact('news'))
+            ->with('i', (request()->input('page', 1) - 1) * 15);
     }
 
     public function show(string $uuid): View
     {
-        $news = Cache::tags('news.show')->remember('news.show.' . $uuid, self::LIST_TTL, function () use ($uuid) {
-            return News::getByUuid($uuid);
-        });
+        $news = Cache::tags('news.show')
+            ->remember(
+                'news.show.' . $uuid,
+                self::LIST_TTL,
+                function () use ($uuid) {
+                    return News::getByUuid($uuid);
+                }
+            );
         NewsShowCounter::dispatch($news);
         return view('News.show', compact('news'));
     }
@@ -54,9 +67,14 @@ class NewsController extends Controller
             $formData = $request->all();
             $news->update($formData);
             $news->category()->dissociate();
-            $news->category()->associate(Category::find($request->input('category_id')));
+            $news->category()
+                ->associate(Category::find($request->input('category_id')));
             if ($request->file('image')) {
-                $path = ImageTransfer::transfer($news, $request->file('image'));
+                $path = ImageTransfer::transfer(
+                    $news,
+                    $request->file('image'),
+                    'photos'
+                );
                 if ($path) {
                     $news->image = $path;
                 }
@@ -81,14 +99,20 @@ class NewsController extends Controller
             if ($formData) {
                 $news = News::create($formData);
                 if ($request->file('image')) {
-                    $path = ImageTransfer::transfer($news, $request->file('image'));
+                    $path = ImageTransfer::transfer(
+                        $news,
+                        $request->file('image'),
+                        'photos'
+                    );
                     if ($path) {
                         $news->image = $path;
                     }
                 }
-                $news->category()->associate(Category::find($request->input('category_id')));
+                $news->category()
+                    ->associate(Category::find($request->input('category_id')));
                 $news->save();
-                Mail::to(env('ADMIN_EMAIL'))->queue((new NewsCreated($news))->onQueue('emails'));
+                Mail::to(env('ADMIN_EMAIL'))
+                    ->queue((new NewsCreated($news))->onQueue('emails'));
                 Cache::tags('newsList')->flush();
                 return redirect()->route('news.index');
             }
@@ -102,7 +126,8 @@ class NewsController extends Controller
         $news = News::getByUuid($uuid);
         if ($news->delete()) {
             Cache::tags('newsList')->flush();
-            return redirect()->back()->with('success', 'Entry ' . $news->title . ' deleted successfully');
+            return back()
+                ->with('success', 'Entry ' . $news->title . ' deleted successfully');
         }
         return back()->with('failure', 'Something went wrong');
     }

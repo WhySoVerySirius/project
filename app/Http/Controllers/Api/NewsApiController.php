@@ -22,9 +22,14 @@ class NewsApiController extends Controller
 
     public function show(string $uuid): NewsResource|Response
     {
-        $news = Cache::tags('news.show')->remember('api.news.' . $uuid, self::CACHE_TTL, function() use ($uuid){
-            return News::uuid($uuid);
-        });
+        $news = Cache::tags('news.show')
+            ->remember(
+                'api.news.' . $uuid,
+                self::CACHE_TTL,
+                function () use ($uuid) {
+                    return News::uuid($uuid);
+                }
+            );
         if ($news !== null) {
             return new NewsResource($news);
         }

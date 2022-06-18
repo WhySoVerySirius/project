@@ -9,16 +9,19 @@ use Illuminate\Support\Facades\Storage;
 
 class ImageTransfer extends Controller
 {
-    public static function transfer($model, UploadedFile $file): bool|string
-    {
-        if ($model->file) {
+    public static function transfer(
+        $object,
+        UploadedFile $file,
+        string $storeLocation
+    ): bool|string {
+        if ($object->file) {
             try {
-                Storage::delete($model->image);
+                Storage::delete($object->image);
             } catch (\Throwable $th) {
                 ImageDelete::dispatch($th);
             }
         }
-        if ($path = Storage::putFile('photos', $file)) {
+        if ($path = Storage::putFile($storeLocation, $file)) {
             return $path;
         };
         return false;

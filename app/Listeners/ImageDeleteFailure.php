@@ -26,6 +26,9 @@ class ImageDeleteFailure
      */
     public function handle(ImageDelete $event)
     {
-        file_put_contents(storage_path() . '/logs/imageDeleteError.log', json_encode($event->throw));
+        file_put_contents(
+            storage_path() . '/logs/imageDeleteError.log',
+            json_encode($event->throw)
+        );
     }
 }

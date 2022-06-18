@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Emadadly\LaravelUuid\Uuids;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 
 class News extends Model
 {
@@ -36,5 +37,19 @@ class News extends Model
             }
         }
         return $news;
+    }
+
+    protected function title(): Attribute
+    {
+        return Attribute::make(
+            set : fn ($value) => ucfirst($value)
+        );
+    }
+
+    protected function description(): Attribute
+    {
+        return Attribute::make(
+            set : fn ($value) => ucfirst($value)
+        );
     }
 }

@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use Illuminate\Bus\Queueable;
 use Illuminate\Console\Command;
 use Illuminate\Support\Facades\Mail;
+use Symfony\Component\Console\Output\ConsoleOutput;
 
 class MailTodaysNews extends Command
 {
@@ -44,6 +45,7 @@ class MailTodaysNews extends Command
             ]
         )
         ->get();
-        Mail::to(env('ADMIN_EMAIL'))->queue((new NewsToday($todaysNews))->onQueue('emails'));
+        Mail::to(env('ADMIN_EMAIL'))
+            ->queue((new NewsToday($todaysNews))->onQueue('emails'));
     }
 }

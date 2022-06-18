@@ -23,7 +23,7 @@ class NewsShow
     /**
      * Handle the event.
      *
-     * @param  \App\Events\NewsShowCounter  $event
+     * @param  \App\Events\NewsShowCounter $event
      * @return void
      */
     public function handle(NewsShowCounter $event)
